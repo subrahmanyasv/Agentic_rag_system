@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Configuration and secrets
+.env
+*.env
+.secrets
+secrets.*
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# RAG specific database and storage
+*.db
+*.sqlite
+*.sqlite3
+chroma_db/
+pinecone/
+.vectordb/
+storage/
+data/
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
