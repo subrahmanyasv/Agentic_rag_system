@@ -7,13 +7,7 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.models.documents import StoredDocument
-
-
-@dataclass(frozen=True, slots=True)
-class ProcessedDocument:
-    """Chunks prepared for vector indexing."""
-
-    chunks: list[Document]
+from app.schemas.rag import ProcessedDocument
 
 
 class PdfProcessor:

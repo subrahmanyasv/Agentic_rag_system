@@ -6,14 +6,13 @@ from app.core.config import Settings
 from app.models.documents import StoredDocument
 from app.repositories.document_repository import DocumentRepository
 from app.schemas.rag import AnswerResponse, Source, UploadResponse
-from app.services.pdf_processor import PdfProcessor
-from app.services.vector_store import VectorStore
+from app.services.interfaces import PdfProcessorInterface, VectorStoreInterface
 
 
 class RagService:
     """Coordinates document ingestion, retrieval, and Ollama generation."""
 
-    def __init__(self, settings: Settings, repository: DocumentRepository, processor: PdfProcessor, vector_store: VectorStore) -> None:
+    def __init__(self, settings: Settings, repository: DocumentRepository, processor: PdfProcessorInterface, vector_store: VectorStoreInterface) -> None:
         self._settings = settings
         self._repository = repository
         self._processor = processor

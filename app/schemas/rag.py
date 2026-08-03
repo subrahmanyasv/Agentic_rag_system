@@ -1,6 +1,7 @@
 """Public API schemas."""
 
 from pydantic import BaseModel, Field
+from langchain_core.documents import Document
 
 
 class UploadResponse(BaseModel):
@@ -32,3 +33,9 @@ class AnswerResponse(BaseModel):
 
     answer: str
     sources: list[Source]
+
+
+class ProcessedDocument(BaseModel):
+    """Chunks prepared for vector indexing."""
+
+    chunks: list[Document]
