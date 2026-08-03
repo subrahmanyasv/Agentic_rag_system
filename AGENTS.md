@@ -1,15 +1,9 @@
-# AGENTS.md
-
 # Engineering Guidelines
-
-This document defines the engineering standards that every AI agent contributing to this project must follow.
-
 The objective is to produce code that is maintainable, testable, extensible, and production-ready.
 
 ---
 
 # 1. Follow SOLID Principles
-
 Every implementation should follow the SOLID design principles.
 
 * Each class should have a single responsibility.
@@ -27,7 +21,6 @@ Avoid tightly coupled code.
 Every component should perform one well-defined task.
 
 Examples include:
-
 * One service for document ingestion.
 * One service for document parsing.
 * One service for embedding generation.
@@ -40,9 +33,7 @@ Do not combine unrelated responsibilities into a single module.
 ---
 
 # 3. Layered Architecture
-
 Separate the application into logical layers.
-
 Typical layers include:
 
 * API
@@ -57,25 +48,14 @@ Business logic must never reside inside API route handlers.
 ---
 
 # 4. Dependency Injection
-
 Dependencies should be injected rather than instantiated directly.
-
 Avoid creating objects using constructors inside business logic whenever possible.
-
-This improves:
-
-* Testability
-* Maintainability
-* Extensibility
-
+Use Constructor dependency injection. Do not use setter dependency injection.
 ---
 
 # 5. Configuration Management
-
 Never hardcode configuration values.
-
 All configurable values must come from environment variables, including:
-
 * API keys
 * Database locations
 * Model names
@@ -91,24 +71,17 @@ Provide sensible defaults where appropriate.
 ---
 
 # 6. Keep Functions Small
-
 Functions should perform one clearly defined task.
-
 Prefer readable code over clever implementations.
-
 If a function becomes difficult to understand, split it into smaller functions.
 
 ---
 
 # 7. Strong Typing
-
 Use Python type hints throughout the project.
-
 Public methods should define:
-
 * Parameter types
 * Return types
-
 Avoid using `Any` unless absolutely necessary.
 
 ---
@@ -149,7 +122,6 @@ Never log secrets or sensitive information.
 ---
 
 # 11. Performance
-
 Avoid unnecessary computation.
 Reuse expensive resources whenever possible.
 Minimize repeated model loading.
@@ -159,29 +131,20 @@ Design for efficient retrieval.
 ---
 
 # 12. Code Reuse
-
 Avoid duplicated logic.
-
 Extract reusable functionality into shared components.
-
 Follow the DRY (Don't Repeat Yourself) principle.
 
 ---
 
 # 13. Testing
-
 New functionality should be designed to be testable.
-
 Prefer modular code that can be unit tested independently.
-
 Avoid tightly coupling business logic with external services.
-
 ---
 
 # 14. Documentation
-
 Document all public classes and methods.
-
 Complex logic should include concise explanations describing *why* the implementation exists, rather than *what* the code does.
 
 ---

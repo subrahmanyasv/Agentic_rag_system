@@ -4,14 +4,9 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
 from app.schemas.rag import AnswerResponse, QuestionRequest, UploadResponse
 from app.services.rag_service import RagService
+from app.core.dependencies import get_rag_service
 
 router = APIRouter()
-
-
-def get_rag_service() -> RagService:
-    """Resolve the application service from FastAPI state."""
-    from app.main import get_service
-    return get_service()
 
 
 @router.get("/health")
