@@ -4,6 +4,7 @@ from typing import Protocol
 from langchain_core.documents import Document
 from app.models.documents import StoredDocument
 from app.schemas.rag import ProcessedDocument
+from app.schemas.rag import AnswerResponse, UploadResponse
 
 
 class PdfProcessorInterface(Protocol):
@@ -27,4 +28,29 @@ class VectorStoreInterface(Protocol):
 
     def search(self, question: str, limit: int) -> list[Document]:
         """Retrieve the most semantically relevant chunks."""
+        ...
+
+
+# Interfaces for the three main use cases of the RAG service, which can be implemented separately if desired.
+class IngestionServiceInterface(Protocol):
+    """Contract for persisting and indexing an uploaded document."""
+
+    def ingest(self, filename: str, content: bytes) -> UploadResponse:
+        """Persist and index one uploaded PDF, skipping if already indexed."""
+        ...
+
+
+class RetrievalServiceInterface(Protocol):
+    """Contract for semantic retrieval of relevant document chunks."""
+
+    def retrieve(self, question: str, limit: int) -> list[Document]:
+        """Return the most relevant chunks for a question."""
+        ...
+
+
+class AnswerGenerationServiceInterface(Protocol):
+    """Contract for generating a grounded answer from retrieved context."""
+
+    def generate(self, question: str, documents: list[Document]) -> AnswerResponse:
+        """Produce an answer using only the supplied context documents."""
         ...

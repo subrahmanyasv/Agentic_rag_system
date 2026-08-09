@@ -1,19 +1,39 @@
 from fastapi import FastAPI
+from langchain_ollama import ChatOllama
+
 from app.api.routes import router
 from app.core.config import Settings
 from app.repositories.document_repository import DocumentRepository
 from app.services.pdf_processor import PdfProcessor
 from app.services.rag_service import RagService
 from app.services.vector_store import VectorStore
+from app.services.ingestion_service import IngestionService
+from app.services.retrieval_service import RetrievalService
+from app.services.answer_generation_service import AnswerGenerationService
 
 
 def build_rag_service(settings: Settings) -> RagService:
-    """Wire concrete dependencies into a RagService (composition root)."""
+    vector_store = VectorStore(settings)
+    ingestion_service = IngestionService(
+        repository = DocumentRepository(settings.data_dir / "uploads"),
+        processor = PdfProcessor(settings.chunk_size, settings.chunk_overlap),
+        vector_store = vector_store,   
+    )
+
+    retrieval_service = RetrievalService(vector_store=vector_store)
+
+
+    model_args: dict[str, str] = {"model": settings.ollama_model}
+    if settings.ollama_base_url:
+        model_args["base_url"] = settings.ollama_base_url
+    llm = ChatOllama(**model_args)
+    answer_service = AnswerGenerationService(llm=llm)
+
     return RagService(
-        settings=settings,
-        repository=DocumentRepository(settings.data_dir / "uploads"),
-        processor=PdfProcessor(settings.chunk_size, settings.chunk_overlap),
-        vector_store=VectorStore(settings),
+        ingestion_service=ingestion_service,
+        retrieval_service=retrieval_service,
+        answer_service=answer_service,
+        retrieval_k=settings.retrieval_k,
     )
 
 
