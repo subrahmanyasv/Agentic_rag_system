@@ -11,3 +11,4 @@ chromadb
 fastapi
 uvicorn
 python-multipart
+structlog>=24.1.0

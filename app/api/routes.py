@@ -5,9 +5,11 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from app.schemas.rag import AnswerResponse, QuestionRequest, UploadResponse
 from app.services.rag_service import RagService
 from app.core.dependencies import get_rag_service
+from app.core.logger import get_logger
+
 
 router = APIRouter()
-
+logger = get_logger(__name__)
 
 @router.get("/health")
 def health_check() -> dict[str, str]:
@@ -28,6 +30,7 @@ async def upload_documents(files: list[UploadFile] = File(...), service: RagServ
         try:
             results.append(service.ingest(upload.filename, content))
         except (ValueError, OSError) as error:
+            logger.warning("document_upload_rejected", filename=upload.filename, reason=str(error))
             raise HTTPException(status_code=422, detail=str(error)) from error
     return results
 
@@ -38,4 +41,5 @@ def ask_question(request: QuestionRequest, service: RagService = Depends(get_rag
     try:
         return service.answer(request.question)
     except Exception as error:
+        logger.error("question_answering_failed", question_length=len(request.question), error_type=type(error).__name__)
         raise HTTPException(status_code=503, detail="The local language model is unavailable.") from error
