@@ -16,3 +16,5 @@ sqlalchemy>=2.0
 asyncpg
 greenlet
 python-dotenv
+passlib[bcrypt]
+pyjwt

@@ -31,6 +31,11 @@ class Settings:
     db_pool_size: int = 5
     db_pool_max_overflow: int = 10
 
+    jwt_secret_key: str | None = None
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_minutes: int = 60 * 24 * 7  # 7 days
+
     @classmethod
     def from_environment(cls) -> "Settings":
         """Create settings using environment variables and safe MVP defaults."""
@@ -56,4 +61,9 @@ class Settings:
             db_retry_backoff_seconds=float(os.getenv("DB_RETRY_BACKOFF_SECONDS", "1.0")),
             db_pool_size=int(os.getenv("DB_POOL_SIZE", "5")),
             db_pool_max_overflow=int(os.getenv("DB_POOL_MAX_OVERFLOW", "10")),
+
+            jwt_secret_key=os.getenv("JWT_SECRET_KEY") or None,
+            jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
+            access_token_expire_minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")),
+            refresh_token_expire_minutes=int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 7)))
         )

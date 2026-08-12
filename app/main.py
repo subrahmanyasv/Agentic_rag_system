@@ -17,6 +17,8 @@ from app.services.vector_store import VectorStore
 from app.services.ingestion_service import IngestionService
 from app.services.retrieval_service import RetrievalService
 from app.services.answer_generation_service import AnswerGenerationService
+from app.services.security.password_hasher import BcryptPasswordHasher
+from app.services.security.token_service import JwtTokenService
 
 logger = get_logger(__name__)
 
@@ -97,6 +99,8 @@ def create_app() -> FastAPI:
     )
 
     application.state.rag_service = build_rag_service(settings)
+    application.state.password_hasher = BcryptPasswordHasher()
+    application.state.token_service = JwtTokenService(settings)
     application.add_middleware(RequestLoggingMiddleware)
     application.include_router(router, prefix="/api/v1", tags=["rag"])
 
