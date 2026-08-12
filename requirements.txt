@@ -12,3 +12,7 @@ fastapi
 uvicorn
 python-multipart
 structlog>=24.1.0
+sqlalchemy>=2.0
+asyncpg
+greenlet
+python-dotenv
