@@ -5,9 +5,11 @@ from fastapi import FastAPI
 from langchain_ollama import ChatOllama
 
 from app.api.routes import router
+from app.api.auth_routes import router as auth_router
 from app.api.middleware import RequestLoggingMiddleware
 from app.core.config import Settings
 from app.core.database import DatabaseConnectionProvider
+from app.core.exception_handlers import register_exception_handlers
 from app.core.logger import get_logger
 from app.core.logging_config import configure_logging
 from app.repositories.document_repository import DocumentRepository
@@ -102,7 +104,9 @@ def create_app() -> FastAPI:
     application.state.password_hasher = BcryptPasswordHasher()
     application.state.token_service = JwtTokenService(settings)
     application.add_middleware(RequestLoggingMiddleware)
+    register_exception_handlers(application)
     application.include_router(router, prefix="/api/v1", tags=["rag"])
+    application.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 
     logger.info("application_started", log_dir=str(settings.log_dir), log_level=settings.log_level)
     return application

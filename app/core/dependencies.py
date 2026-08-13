@@ -4,6 +4,7 @@ from fastapi import Request, Depends
 from typing import AsyncIterator
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import Settings
 from app.services.rag_service import RagService
 from app.services.auth_service import AuthService
 from app.services.security.password_hasher import PasswordHasherInterface
@@ -15,6 +16,16 @@ from app.repositories.postgres_user_repository import PostgresUserRepository
 def get_rag_service(request: Request) -> RagService:
     """Resolve the RagService instance stored on app startup."""
     return request.app.state.rag_service
+
+def get_settings(request: Request) -> Settings:
+    """Resolve the Settings instance stored on app startup.
+ 
+    Lets routes read configuration (e.g. refresh-token cookie lifetime)
+    without hardcoding values that already live in Settings.
+    """
+    return request.app.state.settings
+
+
 
 async def get_db_session(request: Request) -> AsyncIterator[AsyncSession]:
     async with request.app.state.db_provider.session() as session:
