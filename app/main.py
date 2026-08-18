@@ -103,6 +103,7 @@ def create_app() -> FastAPI:
     application.state.rag_service = build_rag_service(settings)
     application.state.password_hasher = BcryptPasswordHasher()
     application.state.token_service = JwtTokenService(settings)
+    application.state.settings = settings
     application.add_middleware(RequestLoggingMiddleware)
     register_exception_handlers(application)
     application.include_router(router, prefix="/api/v1", tags=["rag"])
