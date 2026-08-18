@@ -1,12 +1,16 @@
-"""FastAPI routes for authentication.
+"""
+FastAPI routes for authentication.
 
-No business logic lives here (AGENTS.md #3) — every route does exactly
-three things: pull input out of the request, call AuthService, shape the
-response. Failures (bad credentials, duplicate email, an invalid/expired
-refresh token) are plain exceptions raised by AuthService and are never
-caught here; they propagate to the global exception handlers registered
-in app/core/exception_handlers.py, which is what decides the HTTP status
-and response body for each one.
+Every route does exactly three things: 
+ - pull input out of the request
+ - call AuthService 
+ - shape the response. 
+
+Defined routes: 
+    - POST /signup: register a new user and start a session
+    - POST /login: authenticate an existing user and start a session
+    - POST /refresh: exchange a valid refresh token for a fresh token pair
+    - POST /logout: end the current session
 """
 
 from fastapi import APIRouter, Depends, Request, Response, status
@@ -46,12 +50,14 @@ async def login(
     settings: Settings = Depends(get_settings),
     auth_service: AuthService = Depends(get_auth_service),
 ) -> AccessTokenResponse:
-    """Authenticate a user and start a session.
+    """
+    Authenticate a user and start a session.
 
-    Raises InvalidCredentialsError (-> 401) for a wrong email or
-    password — the two cases are indistinguishable on purpose (see
-    app/services/auth_exceptions.py) so a caller can never learn which
-    emails are registered.
+    ==========================================================
+    TODO: 
+    - Adding redis caching the user instance with refresh token as key.
+    - Adding rate limiting to prevent brute force attacks.
+    ==========================================================
     """
     tokens = await auth_service.login(payload.email, payload.password)
     _set_refresh_cookie(response, tokens.refresh_token, settings)
@@ -65,7 +71,8 @@ async def refresh(
     settings: Settings = Depends(get_settings),
     auth_service: AuthService = Depends(get_auth_service),
 ) -> AccessTokenResponse:
-    """Exchange a valid refresh token (from its cookie) for a fresh token pair.
+    """
+    Exchange a valid refresh token (from its cookie) for a fresh token pair.
 
     A missing cookie is treated identically to an invalid one — both
     raise InvalidRefreshTokenError (-> 401) — so a client can't
@@ -104,16 +111,16 @@ async def logout(
 def _set_refresh_cookie(response: Response, refresh_token: str, settings: Settings) -> None:
     """Attach the refresh token as an httpOnly cookie, never in the body.
 
-    httponly=True keeps it unreachable from JavaScript (mitigates XSS
-    token theft); samesite="strict" mitigates CSRF; secure=True means it
-    is only ever sent over HTTPS. The cookie's lifetime is taken from
-    the same setting used to sign the token itself, so the two never
-    drift apart.
+    httponly=True; prevents JavaScript from reading the cookie.
+    samesite="strict"; mitigates CSRF; 
+    secure=True; Sent only in HTTPS.
+    
+    lifetime is taken from the Settings instance, so it can be configured per environment.
     """
     response.set_cookie(
         key=_REFRESH_TOKEN_COOKIE,
         value=refresh_token,
-        max_age=settings.refresh_token_expire_minutes * 60,
+        max_age=settings.refresh_token_expire_minutes,
         httponly=True,
         secure=True,
         samesite="strict",
