@@ -120,7 +120,7 @@ def _set_refresh_cookie(response: Response, refresh_token: str, settings: Settin
     response.set_cookie(
         key=_REFRESH_TOKEN_COOKIE,
         value=refresh_token,
-        max_age=settings.refresh_token_expire_minutes,
+        max_age=settings.refresh_token_expire_minutes * 60,
         httponly=True,
         secure=True,
         samesite="strict",
